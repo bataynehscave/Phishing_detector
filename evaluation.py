@@ -1,4 +1,5 @@
 def balanced_sample(df, target_column, sample_size):
+
     import pandas as pd
     df_positive = df[df[target_column] == 1]
     df_negative = df[df[target_column] == 0]
@@ -37,7 +38,7 @@ def evaluate_features(df, target, sample_size=1):
     rf_classifier.fit(X, y)
 
     # Train a logistic regression model
-    lr_model = LogisticRegression(random_state=42)
+    lr_model = LogisticRegression(random_state=42, max_iter=2000)
     lr_model.fit(X, y)
 
     # Calculate feature importance scores from random forest
@@ -49,14 +50,14 @@ def evaluate_features(df, target, sample_size=1):
     # Calculate p-values, std_err, and z-scores for logistic regression coefficients
     # x_np = X.values
     
-    X_with_intercept = sm.add_constant(X)  # Add constant term for intercept
-    lr_result = sm.Logit(y, X_with_intercept).fit(maxiter=1000)
-    lr_coefs = lr_result.params[1:]  # Exclude intercept
+    # X_with_intercept = sm.add_constant(X)  # Add constant term for intercept
+    # lr_result = sm.Logit(y, X_with_intercept).fit(maxiter=1000)
+    # lr_coefs = lr_result.params[1:]  # Exclude intercept
 
-    # Get p-values, std_err, and z-scores
-    lr_p_values = lr_result.pvalues[1:]  # Exclude intercept
-    lr_std_err = lr_result.bse[1:]  # Exclude intercept
-    lr_z_scores = lr_result.tvalues[1:]  # Exclude intercept
+    # # Get p-values, std_err, and z-scores
+    # lr_p_values = lr_result.pvalues[1:]  # Exclude intercept
+    # lr_std_err = lr_result.bse[1:]  # Exclude intercept
+    # lr_z_scores = lr_result.tvalues[1:]  # Exclude intercept
 
     # Calculate accuracy for both models
     rf_accuracy = accuracy_score(y, rf_classifier.predict(X))
@@ -66,11 +67,9 @@ def evaluate_features(df, target, sample_size=1):
     result_df = pd.DataFrame({
         'Feature Importance (RF)': feature_importances,
         'Coefficient (LR)': coefs,
-        'p-value (LR)': lr_p_values,
-        'std_err (LR)': lr_std_err,
-        'z-score (LR)': lr_z_scores,
         'Accuracy (RF)': [rf_accuracy],
         'Accuracy (LR)': [lr_accuracy]
     }, index=X.columns)
+
 
     return result_df
